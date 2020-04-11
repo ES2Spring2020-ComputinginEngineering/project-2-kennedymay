@@ -3,21 +3,25 @@
 """
 Name: Kennedy May
 Collaboration:
-Hours Spent:
+Hours Spent: 2 hours
 """
 
 
 import numpy as np
 import matplotlib.pyplot as plt
 import random
-import math 
 
 
 # FUNCTIONS
+
+#this function takes no parameters and opens the data file and returns the
+# 3 arrays of data
 def openckdfile():
     glucose, hemoglobin, classification = np.loadtxt('ckd.csv', delimiter=',', skiprows=1, unpack=True)
     return glucose, hemoglobin, classification
 
+#this function takes 3 parameteres and normalizes (0-1) all the data so that 
+#we can conpare them against each other
 def normalizeData(glucose, hemoglobin, classification):
     glucose_scaled = []
     hemoglobin_scaled = []
@@ -28,7 +32,9 @@ def normalizeData(glucose, hemoglobin, classification):
     glucose_scaled = np.array(glucose_scaled)
     hemoglobin_scaled  = np.array(hemoglobin_scaled)
     return glucose_scaled, hemoglobin_scaled, classification
-    
+   
+#this function takes 3 parameters and graphs them, depending on the
+#classification makes the color of the dot, this function then returns the plot
 def graphData(glucose, hemoglobin, classification):
     plt.figure()
     plt.plot(hemoglobin[classification==1],glucose[classification==1], "k.", label = "Class 1")
@@ -39,15 +45,21 @@ def graphData(glucose, hemoglobin, classification):
     plt.legend()
     return plt.show()
 
+#this function takes no parameters but creates two random numbers both 
+#being assigned newglucose and newhemoglobin, then returns this values
 def createTestCase():
     newhemoglobin = random.random()
     newglucose = random.random()
     return newhemoglobin, newglucose
 
+#this function takes 4 parameters and creates a distance array
+#filled with the distances from the newglucose and newhemoglobin 
+#from each of the glucose and hemoglobin values
 def calculateDisatanceArray(newglucose, newhemoglobin, glucose, hemoglobin):
     distance = np.sqrt(((newhemoglobin-hemoglobin)**2)+(newglucose-glucose)**2)
     return distance
 
+#this fucntion takes 5 parameters and 
 def nearestNeighborClassifier(newglucose, newhemoglobin, glucose, hemoglobin, classification):
     min_index = np.argmin(distance)
     nearest_class = classification[min_index]
@@ -58,6 +70,8 @@ def graphTestCase(newglucose, newhemoglobin, glucose, hemoglobin, classification
     plt.plot(hemoglobin[classification==1],glucose[classification==1], "k.", label = "Class 1")
     plt.plot(hemoglobin[classification==0],glucose[classification==0], "r.", label = "Class 0")
     plt.plot([newhemoglobin], [newglucose], marker = 'o', markersize = 5, color = 'purple')
+    #plt.plot(newhemoglobin[nearest_class==1],newglucose[nearest_class==1], maker = "o", makersize = 5, color = "black", label = "Class 1")
+    #plt.plot(newhemoglobin[nearest_class==0],newglucose[nearest_class==0], maker = "o", makersize = 5, color = "red", label = "Class 2")
     plt.xlabel("Hemoglobin")
     plt.ylabel("Glucose")
     plt.title("Glucose and Hemoglobin")
@@ -99,6 +113,8 @@ nearest_class = nearestNeighborClassifier(newglucose, newhemoglobin, glucose, he
 graphTestCase(newglucose, newhemoglobin, glucose, hemoglobin, classification, nearest_class)
 
 k_classifications, classMajority = kNearestNeighborClassifier(15, newglucose, newhemoglobin, glucose, hemoglobin, classification)
+
+
 
 
 
