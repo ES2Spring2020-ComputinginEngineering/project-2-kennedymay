@@ -1,16 +1,28 @@
-#Please place your FUNCTION code for step 4 here.
 
+"""
+Name: Kennedy May
+Collaboration: none, office hours w/ Jenn
+Hours Spent: 4 hours
+"""
+
+#IMPORT STATEMENTS
 import numpy as np
 import matplotlib.pyplot as plt
 import random
 
 
+
+#CUSTOM FUNCTIONS
+
+#this function takes no parameters and opens the data file and returns the
+# 3 arrays of data
 def openckdfile():
     glucose, hemoglobin, classification = np.loadtxt('ckd.csv', delimiter=',', skiprows=1, unpack=True)
     return glucose, hemoglobin, classification
 
 #this function takes 3 parameteres and normalizes (0-1) all the data so that 
-#we can conpare them against each other
+#we can compare them against each other, it then returns the 3 data arrays
+#normalized
 def normalizeData(glucose, hemoglobin, classification):
     glucose_scaled = []
     hemoglobin_scaled = []
@@ -23,11 +35,19 @@ def normalizeData(glucose, hemoglobin, classification):
     return glucose_scaled, hemoglobin_scaled, classification
 
 
+#this function takes one parameter, and uses that to determine the amount
+#of random centroids that want to be made, it then returns these
 def select(k):
     random_centroids = np.random.random((k, 2))
     return random_centroids
 
 
+#this function takes 3 parameters, the random array of centroids, glucose, 
+# and hemoglobin arrays it calculates the distance from each point to the
+#random centroid and then calculates the smallest distance in the 
+#distance array. These values are then the assigned values for each
+#point to a certain centroid. It then returns the distance and 
+#assingments of each point
 def assign(random_centroids, glucose, hemoglobin):
     s = random_centroids.shape[0]
     distances = np.zeros((s, (len(glucose))))
@@ -39,7 +59,11 @@ def assign(random_centroids, glucose, hemoglobin):
     assigned_centroids = np.argmin(distances, axis = 0)
     return assigned_centroids, distances
 
-
+#this function takes 4 parameters it uses the same k value that is used in
+#select to create an empty update array that is used to be filled with
+#more accurate centroid values. the mean glucose and mean hemoglobin
+#values are found to be filled into the update array and then returns
+#the updated centroids array
 def update(k, assigned_centroids, glucose, hemoglobin):
     updated_centroids = np.zeros((k,2))
     centroid_hemo = np.zeros((1))
@@ -51,6 +75,13 @@ def update(k, assigned_centroids, glucose, hemoglobin):
     return updated_centroids
     
 
+#this function has two parameters, the k that is being sent to select and 
+#update and run_times which is the amount of times that the assign and 
+#and update function will be run. in iterate the openckdfile function is 
+#called and the normalize data function. then select is called using the k 
+#that is sent. assign and update are in a while loop that are creating more
+#and more accurate clusters. Assigned_centroids,  updated_centroids, 
+#glucose, hemoglobin, and  classification are all returned
 def iterate(k, run_times):
     glucose, hemoglobin, classification = openckdfile()
     glucose, hemoglobin, classification = normalizeData(glucose, hemoglobin, classification)
@@ -62,6 +93,10 @@ def iterate(k, run_times):
     return assigned_centroids, updated_centroids, glucose, hemoglobin, classification
 
 
+#this function graphs all the data returned from iterate
+#it graphs each point of glucose and hemoglobin, and gives them a color 
+#depending on its assigned centroid and the updated centroids are ploted
+#and given a color a corresponding color. this function returns nothing
 def graphingKMeans(glucose, hemoglobin, assigned_centroids, updated_centroids):
     plt.figure()
     for i in range(assigned_centroids.max()+1):
@@ -70,10 +105,14 @@ def graphingKMeans(glucose, hemoglobin, assigned_centroids, updated_centroids):
         plt.plot(updated_centroids[i, 0], updated_centroids[i, 1], "D", label = "Centroid " + str(i), color = rcolor)
     plt.xlabel("Hemoglobin")
     plt.ylabel("Glucose")
+    plt.title("Hemoglobin and Glucose")
     plt.legend()
     plt.show()
     
     
+#this function is sent 2 parameters and calculates the number of 
+#truepositives, falsepositives, truenegatives, falsenegatives, CKD, noCKD
+#and then returns these values    
 def calculate_postives_negatives(classification, assigned_centroids):
     truepositives = 0
     falsepositives = 0
@@ -96,6 +135,9 @@ def calculate_postives_negatives(classification, assigned_centroids):
             CKD = CKD + 1
     return truepositives, falsepositives, truenegatives, falsenegatives, CKD, noCKD
 
+#this function has 6 parameters and calculates the perecentage of 
+#truepositives, falsepositives, truenegatives, falsenegatives
+#and then returns these percentages
 def calculate_percentages(truepositives, falsepositives, truenegatives, falsenegatives, CKD, noCKD):
     percentage_truepostives = "Percentage of True Positves:" + str((truepositives/CKD)*100) + "%"
     percentage_falsepositives = "Percentage of False Positives:" + str((falsepositives/noCKD)*100) + "%"
